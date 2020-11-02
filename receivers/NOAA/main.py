@@ -5,7 +5,7 @@ import json
 # from typing import *
 
 
-def record(freq: float, file_out: str, duration: float, sample = 60000: int, dongleGain = 50: int, bias_tee = "enable_bias_tee": str, wav_rate: int = 11025) -> str:
+def record(freq: float, file_out: str, duration: float, sample_rate = 60000: int, dongle_gain = 50: int, bias_tee = "enable_bias_tee": str, wav_rate: int = 11025) -> str:
     """
     freq - in MHz, sample, 
 
@@ -18,14 +18,14 @@ def record(freq: float, file_out: str, duration: float, sample = 60000: int, don
     # Run rtl_fm (record)
     subprocess.run(args=[
         "timeout {} rtl_fm {} -f {}M -s {} -g {} -F 9 {}".format(
-            duration, bias_tee, freq, sample, dongleGain, raw_out_path)
+            duration, bias_tee, freq, sample_rate, dongle_gain, raw_out_path)
     ])
     # subprocess.run(args=[
     #     "timeout", str(duration), 
     #     "rtl_fm", bias_tee,   
     #     "-f", str(freq)+"M", 
-    #     "-s", str(sample), 
-    #     "-g", str(dongleGain),
+    #     "-s", str(sample_rate), 
+    #     "-g", str(dongle_gain),
     #     "-F", "9",
     #     raw_out_path
     # ])
@@ -33,12 +33,12 @@ def record(freq: float, file_out: str, duration: float, sample = 60000: int, don
     # Run sox (convert)
     subprocess.run(args=[
         "sox -t raw -r {} -b 16 {} {} rate {}".format(
-            sample, dongleGain, raw_out_path, wav_out_path, wav_rate)
+            sample_rate, raw_out_path, wav_out_path, wav_rate)
     ])
     # subprocess.run(args=[
     #     "sox",
     #     "-t", "raw",
-    #     "-r", str(sample),
+    #     "-r", str(sample_rate),
     #     "-b", "16",
     #     raw_out_path,
     #     wav_out_path,
