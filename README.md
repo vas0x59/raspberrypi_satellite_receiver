@@ -8,9 +8,16 @@ HELLO
 
 
 [Receivers manager] :
-    Calling the satellite receiver at the start of the pass
-    Config managment
+    src: ./manager
+    functionality:
+        Calculate/Get schedule
+        Calling the satellite receiver at the start of the passage
+        Config managment
 
+[NOAA receiver] :
+    src: ./receivers/NOAA
+    functionality:
+        Decode data from [SDR] (SDR -> Images)
 
 ```
 

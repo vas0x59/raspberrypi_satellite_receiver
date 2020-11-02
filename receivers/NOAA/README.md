@@ -1,4 +1,12 @@
 # NOAA receiver 
+
+## Pipeline
+
+```
+[SDR] --> [rtl_fm] --raw--> [sox] --wav--> [wxtoimg] --images--> [python script] ----> OUT
+```
+
+
 ## Output files
 
 ```
