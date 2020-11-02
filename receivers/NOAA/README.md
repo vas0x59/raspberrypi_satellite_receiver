@@ -4,6 +4,8 @@
 
 ```
 [SDR] --> [rtl_fm] --raw--> [sox] --wav--> [wxtoimg] --images--> [python process] ----> OUT
+           ++++++            +++
+
 ```
 
 
