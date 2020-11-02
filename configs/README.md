@@ -1,6 +1,7 @@
 ## Main config file
 ```json
 {
+    "output_directory": "<path to output>",
     "satellites": {
         "NOAA" : {
         },
@@ -14,8 +15,6 @@
 ## NOAA Config
 ```json 
 {
-    "output_dir" : {
 
-    }
 }
 ```
