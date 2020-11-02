@@ -2,9 +2,11 @@ HELLO
 
 ## Architecture
 ```
-[SDR], [Receivers manager] -> [NOAA receiver] -> [NOAA output dir], [Receivers manager]
+[Receivers manager] <--http--> [NOAA receiver] ----> [NOAA output dir], --http--> [Receivers manager]
+                                      |
+                                    [SDR]
 
-[NOAA output dir], [Receivers manager] -> [Web UI]
+[NOAA output dir] ---->, [Receivers manager] --http--> [Web UI]
 
 
 [Receivers manager] :

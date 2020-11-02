@@ -17,33 +17,25 @@ def record(freq: float, file_out: str, duration: float, sample_rate = 60000: int
 
     # Run rtl_fm (record)
     subprocess.run(args=[
-        "timeout {} rtl_fm {} -f {}M -s {} -g {} -F 9 {}".format(
-            duration, bias_tee, freq, sample_rate, dongle_gain, raw_out_path)
+        "timeout", str(duration), 
+        "rtl_fm", bias_tee,   
+        "-f", str(freq)+"M", 
+        "-s", str(sample_rate), 
+        "-g", str(dongle_gain),
+        "-F", "9",
+        raw_out_path
     ])
-    # subprocess.run(args=[
-    #     "timeout", str(duration), 
-    #     "rtl_fm", bias_tee,   
-    #     "-f", str(freq)+"M", 
-    #     "-s", str(sample_rate), 
-    #     "-g", str(dongle_gain),
-    #     "-F", "9",
-    #     raw_out_path
-    # ])
     
     # Run sox (convert)
     subprocess.run(args=[
-        "sox -t raw -r {} -b 16 {} {} rate {}".format(
-            sample_rate, raw_out_path, wav_out_path, wav_rate)
+        "sox",
+        "-t", "raw",
+        "-r", str(sample_rate),
+        "-b", "16",
+        raw_out_path,
+        wav_out_path,
+        "rate", str(wav_rate)
     ])
-    # subprocess.run(args=[
-    #     "sox",
-    #     "-t", "raw",
-    #     "-r", str(sample_rate),
-    #     "-b", "16",
-    #     raw_out_path,
-    #     wav_out_path,
-    #     "rate", str(wav_rate)
-    # ])
     
     # Setcorrect time stamp and remove raw
     subprocess.run(args=[
@@ -56,15 +48,11 @@ def record(freq: float, file_out: str, duration: float, sample_rate = 60000: int
 
 def wx_to_img(file_in: str, file_out: str, enhancement: str) -> str:
     subprocess.run(args=[
-         "wxtoimg -o -e {} {} {}".format(
-            enhancement, file_in, file_out)
+        "wxtoimg", "-o",
+        "-e", enhancement,
+        file_in,
+        file_out
     ])
-    # subprocess.run(args=[
-    #     "wxtoimg", "-o",
-    #     "-e", enhancement,
-    #     file_in,
-    #     file_out
-    # ])
     return file_out
 # record()
 
