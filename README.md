@@ -1,6 +1,6 @@
 HELLO
 
-### Architecture
+## Architecture
 ```
 [SDR], [Receivers manager] -> [NOAA receiver] -> [NOAA output dir], [Receivers manager]
 
@@ -10,22 +10,20 @@ HELLO
 [Receivers manager] :
     Calling the satellite receiver at the start of the pass
     Config managment
-    
+
 
 ```
 
-### Satellites
+## Satellites
  - [ ] **NOAA**
  - [ ] **Meteor**
 
-### Output dir
+## Output dir
 ```
 <path to output>/<satellite type>/<satellite name>/<date>/<satellite data>
 ```
 
-### Configuration
+## Configuration
 
-### Manual Installation 
+## Manual Installation 
 
-
-### Some 
