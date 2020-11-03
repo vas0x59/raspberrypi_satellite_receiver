@@ -2,9 +2,11 @@ HELLO
 
 ## Architecture
 ```
-[Receivers manager] <--http--> [NOAA receiver] ----> [NOAA output dir], --http--> [Receivers manager]
-                                      |
-                                    [SDR]
+                                   [tle updater]
+                                         |
+[Receivers manager] <--socketio--> [NOAA receiver] ----> [NOAA output dir], --socketio--> [Receivers manager]
+                                         |
+                                       [SDR]
 
 [NOAA output dir] ---->, [Receivers manager] --http--> [Web UI]
 
@@ -17,12 +19,23 @@ HELLO
 [Receivers manager] :
     src: ./manager
     functionality:
-        TLE download
-        TLE managment
         Calculate/Get schedule
         Calling the satellite receiver at the start of the passage
         Config managment
         Output data managment
+    request:
+        get_next_pass(sat_name) -> next_pass
+        get_receiver_config(sat_type) -> receiver_config
+        get_all_satellites -> List[(sat_type, sat_name)]
+        get_satellites -> List[(sat_type, sat_name)]
+        get_dirs -> tle_dir, output_dir
+
+[pass] : 
+    sat_type
+    sat_name
+    time_start
+    time_end
+    duration
 
 [NOAA receiver] :
     src: ./receivers/NOAA

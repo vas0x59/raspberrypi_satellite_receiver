@@ -6,5 +6,13 @@
     "wx_to_img" : {
         "enhancements" : [
         ]
+    },
+    "satellites" : {
+        "NOAA 15" : {
+            "apt_freq": 137.62
+        },
+        "NOAA 18" : {
+            "apt_freq": 137.62
+        }
     }
 }

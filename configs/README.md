@@ -9,6 +9,7 @@
         "https://celestrak.com/NORAD/elements/weather.txt",
         "https://celestrak.com/NORAD/elements/amateur.txt"
     ],
+    "tle_update_period" : 86400,
     "station_name" : "Test1",
     "station_location": {
         "lat" : 0,

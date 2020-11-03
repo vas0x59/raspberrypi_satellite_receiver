@@ -1,4 +1,8 @@
 import requests
+import json
+import socketio
+
+sio = socketio.Client()
 
 def download_tle(tle_sources: list[str], tle_dir: str):
     concatenated_content = ""
@@ -13,7 +17,7 @@ def download_tle(tle_sources: list[str], tle_dir: str):
     
 
 
-def split_tle_for_satellites(satellites: list[], tle_dir: str):
+def split_tle_for_satellites(satellites: list[dict], tle_dir: str):
     """
     <tle_dir>/<satellite type>/<satellite name>.tle
     """
@@ -30,13 +34,30 @@ def split_tle_for_satellites(satellites: list[], tle_dir: str):
 
 
     for satellite in satellites:
-        sat_name = ""
-        sat_type = ""
-        out_file = "{}/{}/{}.tle".format(tle_dir, sat_type, sat_names)
+        sat_name = satellite["name"]
+        sat_type = satellite["type"]
+        out_file = "{}/{}/{}.tle".format(tle_dir, sat_type, sat_name)
         if sat_name.strip() in all_sat_tle:
             sat_tle = all_sat_tle[sat_tle]
             open(out_file, "w").write(sat_tle)
 
-def tle_update(tle_dir: str, tle_sources: list[str], satellites: list[]):
+def tle_update(tle_dir: str, tle_sources: list[str], satellites: list[dict]):
+    tle_dir_json = json.loads(open(tle_dir+"/last_update.json", "r").read())
+    tle_dir_json["last_update_datetime"] = get_datetime()
     download_tle(tle_sources, tle_dir)
     split_tle_for_satellites(satellites, tle_dir)
+    open(tle_dir+"/last_update.json", "w").write(json.dumps(tle_dir_json))
+
+@sio.on("update", namespace="tle_download")
+def callback(sid, msg):
+    print("update")
+    tle_dir = msg["tle_dir"]
+    tle_sources = msg["tle_sources"]
+    satellites = msg["satellites"] # {"type":"NOAA", "name":"NOAA 15"}
+    tle_update(tle_dir, tle_sources, satellites)
+@sio.event
+def connect():
+    print("I'm connected!")
+
+sio.connect("http://localhost:5000", namespaces=["tle_download"])
+sio.wait()
