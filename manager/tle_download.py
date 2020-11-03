@@ -1,8 +1,8 @@
 import requests
 import json
-import socketio
+# import socketio
 
-sio = socketio.Client()
+# sio = socketio.Client()
 
 def download_tle(tle_sources: list[str], tle_dir: str):
     concatenated_content = ""
@@ -48,16 +48,16 @@ def tle_update(tle_dir: str, tle_sources: list[str], satellites: list[dict]):
     split_tle_for_satellites(satellites, tle_dir)
     open(tle_dir+"/last_update.json", "w").write(json.dumps(tle_dir_json))
 
-@sio.on("update", namespace="tle_download")
-def callback(sid, msg):
-    print("update")
-    tle_dir = msg["tle_dir"]
-    tle_sources = msg["tle_sources"]
-    satellites = msg["satellites"] # {"type":"NOAA", "name":"NOAA 15"}
-    tle_update(tle_dir, tle_sources, satellites)
-@sio.event
-def connect():
-    print("I'm connected!")
+# @sio.on("update", namespace="tle_download")
+# def callback(sid, msg):
+#     print("update")
+#     tle_dir = msg["tle_dir"]
+#     tle_sources = msg["tle_sources"]
+#     satellites = msg["satellites"] # {"type":"NOAA", "name":"NOAA 15"}
+#     tle_update(tle_dir, tle_sources, satellites)
 
-sio.connect("http://localhost:5000", namespaces=["tle_download"])
-sio.wait()
+# def connect():
+#     print("I'm connected!")
+
+# sio.connect("http://localhost:5000", namespaces=["tle_download"])
+# sio.wait()

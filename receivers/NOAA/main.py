@@ -17,11 +17,11 @@ noaa_config = {}
 #         self.freq = 0
 #         self.name = 0
 
-class Pass:
-    def __init__(self, start_time = 0, end_time = 0, duration = 0):
-        self.start_time = start_time
-        self.end_time = end_time
-        self.duration = duration
+# class Pass:
+#     def __init__(self, start_time = 0, end_time = 0, duration = 0):
+#         self.start_time = start_time
+#         self.end_time = end_time
+#         self.duration = duration
 
 noaa_satellites = {}
 

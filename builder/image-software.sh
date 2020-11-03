@@ -60,9 +60,16 @@ chrony cmake build-essential python-pip libusb-1.0-0-dev python3 python3-dev pyt
 || (echo_stamp "Some packages wasn't installed!" "ERROR"; exit 1)
 
 echo_stamp "Install python libs"
-my_travis_retry pip3 install pandas
+my_travis_retry pip3 install pandas pyorbital
 
-echo_stamp "Change clever-show and catkin_ws owner to pi"
+echo_stamp "Install nodejs"
+
+curl -sL https://deb.nodesource.com/setup_14.x | bash -
+apt-get install -y nodejs
+echo_stamp "node.js version: $(node --version)"
+
+
+echo_stamp "Change owner to pi"
 chown -Rf pi:pi /home/pi/rpi_satellite_receiver/
 
 echo_stamp "End of software installation"
