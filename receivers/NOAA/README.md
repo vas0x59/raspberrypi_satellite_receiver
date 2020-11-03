@@ -12,6 +12,6 @@
 ## Output files
 
 ```
-<path to output>/NOAA/<satellite name>/<date>/image/<images>
-<path to output>/NOAA/<satellite name>/<date>/wav/<wavs>
+<path to output>/NOAA/<satellite name>/<datetime>/image/<images>
+<path to output>/NOAA/<satellite name>/<datetime>/wav/<wavs>
 ```

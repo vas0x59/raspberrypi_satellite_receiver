@@ -1,0 +1,10 @@
+{
+    "radio" : {
+        "dongle_gain" : 50,
+        "bias_tee" : "enable_bias_tee"
+    },
+    "wx_to_img" : {
+        "enhancements" : [
+        ]
+    }
+}
