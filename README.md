@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.com/vas0x59/raspberrypi_satellite_receiver.svg?branch=master)](https://travis-ci.org/vas0x59/raspberrypi_satellite_receiver)
+[![Build Status](https://travis-ci.com/vas0x59/raspberrypi_satellite_receiver.svg?branch=master)](https://travis-ci.com/vas0x59/raspberrypi_satellite_receiver)
 
 
 ## Architecture
