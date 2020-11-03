@@ -1,5 +1,5 @@
 HELLO
-
+![Travis CI](https://travis-ci.com/vas0x59/raspberrypi_satellite_receiver.svg?branch=master)
 ## Architecture
 ```
                                    [tle updater]

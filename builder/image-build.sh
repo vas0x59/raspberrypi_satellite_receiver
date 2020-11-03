@@ -50,19 +50,16 @@ echo_stamp "IMAGE_PATH=${IMAGE_PATH}" "INFO"
 get_image() {
   # TEMPLATE: get_image <IMAGE_PATH> <RPI_DONWLOAD_URL>
   local BUILD_DIR=$(dirname $1)
-  echo_stamp "BUILD_DIR=${BUILD_DIR}" "INFO"
   local RPI_ZIP_NAME=$(basename $2)
-  echo_stamp "RPI_ZIP_NAME=${RPI_ZIP_NAME}" "INFO"
-  local RPI_IMAGE_NAME=$(echo ${RPI_ZIP_NAME} | sed 's/.zip//')
-  echo_stamp "RPI_IMAGE_NAME=${RPI_IMAGE_NAME}" "INFO"
+  local RPI_IMAGE_NAME=$(echo ${RPI_ZIP_NAME} | sed 's/zip/img/')
 
   if [ ! -e "${BUILD_DIR}/${RPI_ZIP_NAME}" ]; then
-    echo_stamp "Downloading original clover distribution"
+    echo_stamp "Downloading original Linux distribution"
     wget --progress=dot:giga -O ${BUILD_DIR}/${RPI_ZIP_NAME} $2
-    echo_stamp "Downloading complete" "SUCCESS"
-  else echo_stamp "Clever distribution already downloaded" "INFO"; fi
+    echo_stamp "Downloading complete" "SUCCESS" \
+  else echo_stamp "Linux distribution already donwloaded"; fi
 
-  echo_stamp "Unzipping clever distribution image" \
+  echo_stamp "Unzipping Linux distribution image" \
   && unzip -p ${BUILD_DIR}/${RPI_ZIP_NAME} ${RPI_IMAGE_NAME} > $1 \
   && echo_stamp "Unzipping complete" "SUCCESS" \
   || (echo_stamp "Unzipping was failed!" "ERROR"; exit 1)
