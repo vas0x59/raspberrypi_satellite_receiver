@@ -31,8 +31,8 @@ jobs:
       #   - cd images && zip -9 ${IMAGE_NAME}.zip ${IMAGE_NAME} && stat --printf="Compressed image size:%s\n" ${IMAGE_NAME}.zip
       before_deploy:
         # Set up git user name and tag this commit
-        - git config --local user.name "goldarte"
-        - git config --local user.email "goldartt@gmail.com"
+        - git config --local user.name "vas0x59"
+        - git config --local user.email "vasily.yuryev.a1@gmail.com"
         - sudo chmod -R 777 *
         - cd images && zip ${IMAGE_NAME}.zip ${IMAGE_NAME}
       deploy:
