@@ -55,12 +55,12 @@ apt-get update -qq
 
 echo_stamp "Software installing"
 apt-get install -y \
-chrony cmake build-essential python-pip libusb-1.0-0-dev python3 python3-dev python3-pip git\
+chrony cmake build-essential python-pip libusb-1.0-0-dev python3 python3-dev python3-numpy python3-pip git\
 && echo_stamp "Everything was installed!" "SUCCESS" \
 || (echo_stamp "Some packages wasn't installed!" "ERROR"; exit 1)
 
 echo_stamp "Install python libs"
-my_travis_retry pip install numpy pandas
+my_travis_retry pip install pandas
 
 echo_stamp "Change clever-show and catkin_ws owner to pi"
 chown -Rf pi:pi /home/pi/rpi_satellite_receiver/

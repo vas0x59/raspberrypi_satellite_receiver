@@ -1,4 +1,5 @@
 os: linux
+dist: xenial
 language: generic
 services:
   - docker
@@ -6,10 +7,10 @@ env:
   global:
     - DOCKER="goldarte/img-tool:v0.5"
     - TARGET_REPO="https://github.com/${TRAVIS_REPO_SLUG}.git"
-    - if [[ -z ${TRAVIS_TAG} ]]; then IMAGE_VERSION="${TRAVIS_COMMIT}}"; else IMAGE_VERSION="${TRAVIS_TAG}"; fi
+    - IMAGE_VERSION=${TRAVIS_TAG:-${TRAVIS_COMMIT:0:7}}
     - IMAGE_NAME="$(basename -s '.git' ${TARGET_REPO})_${IMAGE_VERSION}.img"
 git:
-  depth: false
+  depth: 25
 jobs:
   fast_finish: true
   include:
@@ -26,15 +27,15 @@ jobs:
         - docker run --privileged --rm -v /dev:/dev -v $(pwd):/mnt -e TRAVIS_TAG="${TRAVIS_TAG}" ${DOCKER}
       before_cache:
         - cp images/*.zip imgcache
-      # after_success:
-      #   - sudo chmod -R 777 *
-      #   - cd images && zip -9 ${IMAGE_NAME}.zip ${IMAGE_NAME} && stat --printf="Compressed image size:%s\n" ${IMAGE_NAME}.zip
+      after_success:
+        - sudo chmod -R 777 *
+        - cd images && zip -9 ${IMAGE_NAME}.zip ${IMAGE_NAME} && stat --printf="Compressed image size:%s\n" ${IMAGE_NAME}.zip
       before_deploy:
         # Set up git user name and tag this commit
         - git config --local user.name "vas0x59"
         - git config --local user.email "vasily.yuryev.a1@gmail.com"
-        - sudo chmod -R 777 *
-        - cd images && zip ${IMAGE_NAME}.zip ${IMAGE_NAME}
+        # - sudo chmod -R 777 *
+        # - cd images && zip ${IMAGE_NAME}.zip ${IMAGE_NAME}
       deploy:
         provider: releases
         token: ${GITHUB_OAUTH_TOKEN}
