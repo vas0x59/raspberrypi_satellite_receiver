@@ -60,7 +60,7 @@ chrony cmake build-essential python-pip libusb-1.0-0-dev python3 python3-dev pyt
 || (echo_stamp "Some packages wasn't installed!" "ERROR"; exit 1)
 
 echo_stamp "Install python libs"
-my_travis_retry pip install pandas
+my_travis_retry pip3 install pandas
 
 echo_stamp "Change clever-show and catkin_ws owner to pi"
 chown -Rf pi:pi /home/pi/rpi_satellite_receiver/
