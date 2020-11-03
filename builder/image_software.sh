@@ -1,5 +1,6 @@
 #! /usr/bin/env bash
 
+
 set -e # Exit immidiately on non-zero result
 
 echo_stamp() {
