@@ -82,7 +82,7 @@ else
     echo_stamp "rtl-sdr install done" "SUCCESS"
 fi
 echo_stamp "Install wxtoimg"
-dpkg -i "${REPO_DIR}/third_party/wxtoimg-armhf-2.11.2-beta.deb"
+dpkg -i "/home/pi/rpi_satellite_receiver/third_party/wxtoimg-armhf-2.11.2-beta.deb"
 wxtoimg <<< YES
 echo_stamp "wxtoimg: $(wxtoimg -- help)"
 
