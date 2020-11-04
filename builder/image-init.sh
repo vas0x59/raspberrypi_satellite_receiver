@@ -2,8 +2,6 @@
 
 set -e
 
-sdasdwee
-
 echo_stamp() {
   # TEMPLATE: echo_stamp <TEXT> <TYPE>
   # TYPE: SUCCESS, ERROR, INFO
