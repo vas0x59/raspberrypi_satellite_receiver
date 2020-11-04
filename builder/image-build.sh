@@ -69,7 +69,7 @@ echo_stamp "IMAGE_PATH=${IMAGE_PATH}" "INFO"
 img-tool ${IMAGE_PATH} load ${SOURCE_IMAGE}
 
 # img-resize ${IMAGE_PATH} max '6G'
-img-tool ${IMAGE_PATH} size '6G'
+img-tool ${IMAGE_PATH} size 6000000000
 
 if [[ ! -z ${TRAVIS_TAG} ]]; then
   cd ${REPO_DIR}
