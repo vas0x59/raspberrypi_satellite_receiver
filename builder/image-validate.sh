@@ -2,7 +2,7 @@
 
 set -ex
 
-cd /home/pi/catkin_ws/src/clover/builder/test/
+cd /home/pi/rpi_satellite_receiver/builder/test/
 ./test.sh
 
 echo "Move /etc/ld.so.preload back to its original position"
