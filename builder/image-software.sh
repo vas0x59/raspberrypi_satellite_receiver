@@ -3,7 +3,7 @@
 
 set -e # Exit immidiately on non-zero result
 
-REPO_DIR="/mnt"
+# REPO_DIR="/mnt"
 
 echo_stamp() {
   # TEMPLATE: echo_stamp <TEXT> <TYPE>
@@ -51,7 +51,7 @@ my_travis_retry() {
 
 echo_stamp "Move /etc/ld.so.preload out of the way"
 mv /etc/ld.so.preload /etc/ld.so.preload.disabled-for-build
-
+echo "$(lscpu)"
 echo_stamp "Update apt cache"
 apt-get update -qq
 
