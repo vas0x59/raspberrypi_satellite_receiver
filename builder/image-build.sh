@@ -100,6 +100,13 @@ done
 umount -fR ${MOUNT_POINT}
 losetup -d ${DEV_IMAGE}
 
+echo_stamp "image-software.sh"
 img-chroot ${IMAGE_PATH} exec ${SCRIPTS_DIR}'/image-software.sh'
 
+echo_stamp "image-validate.sh"
+img-chroot ${IMAGE_PATH} exec ${SCRIPTS_DIR}'/image-validate.sh'
+
 img-resize ${IMAGE_PATH}
+
+
+echo_stamp "DONE"

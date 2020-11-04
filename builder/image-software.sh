@@ -83,8 +83,12 @@ else
 fi
 echo_stamp "Install wxtoimg"
 dpkg -i "/home/pi/rpi_satellite_receiver/third_party/wxtoimg-armhf-2.11.2-beta.deb"
-wxtoimg <<< YES
-echo_stamp "wxtoimg: $(wxtoimg -- help)"
+
+echo -ne 'YES\n' | wxtoimg --help \
+&& echo "wxtoimg_0" \
+|| echo "wxtoimg_1"
+
+# echo "wxtoimg: $(wxtoimg --help)"
 
 echo_stamp "Install python libs"
 my_travis_retry pip3 install pandas pyorbital ephem tweepy Pillow
