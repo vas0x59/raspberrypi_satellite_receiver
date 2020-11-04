@@ -57,9 +57,9 @@ apt-get update -qq
 
 echo_stamp "Software installing"
 apt-get install -y \
-cmake build-essential python-pip libusb-1.0 libusb-1.0-0-dev \
-python3 python3-dev python3-numpy python3-pip git \
-sox libatlas-base-dev \
+cmake build-essential python-pip libusb-1.0 libusb-1.0-0-dev git \
+python3 python3-dev python3-numpy python3-pip python-setuptools python3-setuptools \
+sox libatlas-base-dev libncurses5-dev libncursesw5-dev libatlas-base-dev libxft-dev libxft2 libjpeg9 libjpeg9-dev \
 && echo_stamp "Everything was installed!" "SUCCESS" \
 || (echo_stamp "Some packages wasn't installed!" "ERROR"; exit 1)
 
