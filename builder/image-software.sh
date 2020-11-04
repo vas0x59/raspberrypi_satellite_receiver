@@ -3,6 +3,8 @@
 
 set -e # Exit immidiately on non-zero result
 
+REPO_DIR="/mnt"
+
 echo_stamp() {
   # TEMPLATE: echo_stamp <TEXT> <TYPE>
   # TYPE: SUCCESS, ERROR, INFO
