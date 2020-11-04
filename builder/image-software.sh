@@ -55,18 +55,43 @@ apt-get update -qq
 
 echo_stamp "Software installing"
 apt-get install -y \
-chrony cmake build-essential python-pip libusb-1.0-0-dev python3 python3-dev python3-numpy python3-pip git\
+cmake build-essential python-pip libusb-1.0 libusb-1.0-0-dev \
+python3 python3-dev python3-numpy python3-pip git \
+sox libatlas-base-dev
 && echo_stamp "Everything was installed!" "SUCCESS" \
 || (echo_stamp "Some packages wasn't installed!" "ERROR"; exit 1)
 
+### Install RTL-SDR
+if [ -e /usr/local/bin/rtl_fm ]; then
+    echo_stamp "rtl-sdr was already installed"
+else
+    echo_stamp "Installing rtl-sdr from osmocom..."
+    # cd /tmp/
+    git clone https://github.com/osmocom/rtl-sdr.git
+    cd rtl-sdr/
+    mkdir build
+    cd build
+    cmake ../ -DINSTALL_UDEV_RULES=ON -DDETACH_KERNEL_DRIVER=ON
+    make
+    sudo make install
+    sudo ldconfig
+    cd ../../
+    cp ./rtl-sdr/rtl-sdr.rules /etc/udev/rules.d/
+    echo_stamp "rtl-sdr install done" "SUCCESS"
+fi
+echo_stamp "Install wxtoimg"
+dpkg -i "${REPO_DIR}/third_party/wxtoimg-armhf-2.11.2-beta.deb"
+wxtoimg <<< YES
+echo_stamp "wxtoimg: $(wxtoimg -- help)"
+
 echo_stamp "Install python libs"
-my_travis_retry pip3 install pandas pyorbital
+my_travis_retry pip3 install pandas pyorbital ephem tweepy Pillow
 
 echo_stamp "Install nodejs"
 
 curl -sL https://deb.nodesource.com/setup_14.x | bash -
 apt-get install -y nodejs
-echo_stamp "node.js version: $(node --version)"
+echo_stamp "node.js version: $(node --version)" "SUCCESS"
 
 
 echo_stamp "Change owner to pi"
