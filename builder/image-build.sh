@@ -67,7 +67,8 @@ get_image() {
 
 get_image ${IMAGE_PATH} ${SOURCE_IMAGE}
 
-img-resize ${IMAGE_PATH} max '6G'
+# img-resize ${IMAGE_PATH} max '6G'
+img-tool ${IMG_PATH} size '6G'
 
 if [[ ! -z ${TRAVIS_TAG} ]]; then
   cd ${REPO_DIR}
@@ -101,30 +102,29 @@ umount -fR ${MOUNT_POINT}
 losetup -d ${DEV_IMAGE}
 
 
-img-chroot ${IMAGE_PATH} copy ${SCRIPTS_DIR}'/assets/init_rpi.sh' '/root/'
-img-chroot ${IMAGE_PATH} copy ${SCRIPTS_DIR}'/assets/hardware_setup.sh' '/root/'
+img-tool ${IMAGE_PATH} copy ${SCRIPTS_DIR}'/assets/init_rpi.sh' '/root/'
+img-tool ${IMAGE_PATH} copy ${SCRIPTS_DIR}'/assets/hardware_setup.sh' '/root/'
 
 echo_stamp "image-init.sh"
-img-chroot ${IMAGE_PATH} exec ${SCRIPTS_DIR}'/image-init.sh' ${IMAGE_VERSION} ${SOURCE_IMAGE} \
+img-tool ${IMAGE_PATH} exec ${SCRIPTS_DIR}'/image-init.sh' ${IMAGE_VERSION} ${SOURCE_IMAGE} \
 && echo_stamp "Init - OK" "SUCCESS" \
 || (echo_stamp "Init - ERROR" "ERROR"; exit 1)
 
 echo_stamp "image-software.sh"
-img-chroot ${IMAGE_PATH} exec ${SCRIPTS_DIR}'/image-software.sh' \
+img-tool ${IMAGE_PATH} exec ${SCRIPTS_DIR}'/image-software.sh' \
 && echo_stamp "Software - OK" "SUCCESS" \
 || (echo_stamp "Software - ERROR" "ERROR"; exit 1)
 
 echo_stamp "image-network.sh"
-img-chroot ${IMAGE_PATH} exec ${SCRIPTS_DIR}'/image-network.sh' \
+img-tool ${IMAGE_PATH} exec ${SCRIPTS_DIR}'/image-network.sh' \
 && echo_stamp "Network config - OK" "SUCCESS" \
 || (echo_stamp "Network config - ERROR" "ERROR"; exit 1)
 
 echo_stamp "image-validate.sh"
-img-chroot ${IMAGE_PATH} exec ${SCRIPTS_DIR}'/image-validate.sh' \
+img-tool ${IMAGE_PATH} exec ${SCRIPTS_DIR}'/image-validate.sh' \
 && echo_stamp "validate - OK" "SUCCESS" \
 || (echo_stamp "validate - ERROR" "ERROR"; exit 1)
 
-img-resize ${IMAGE_PATH}
-
+img-tool ${IMG_PATH} size $(img-tool ${IMG_PATH} size | grep "IMG_MIN_SIZE" | cut -b 15-)
 
 echo_stamp "DONE"

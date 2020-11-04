@@ -5,7 +5,8 @@ services:
   - docker
 env:
   global:
-    - DOCKER="goldarte/img-tool:v0.5"
+    # - DOCKER="goldarte/img-tool:v0.5"
+    - DOCKER="urpylka/img-tool:0.6.1"
     - TARGET_REPO="https://github.com/${TRAVIS_REPO_SLUG}.git"
     - IMAGE_VERSION=${TRAVIS_TAG:-${TRAVIS_COMMIT:0:7}}
     - IMAGE_NAME="$(basename -s '.git' ${TARGET_REPO})_${IMAGE_VERSION}.img"
@@ -24,7 +25,7 @@ jobs:
         # Check if there are any cached images, copy them to our "images" directory
         - if [ -n "$(ls -A imgcache/*.zip)" ]; then mkdir -p images && cp imgcache/*.zip images; fi
       script:
-        - docker run --privileged --rm -v /dev:/dev -v $(pwd):/mnt -e TRAVIS_TAG="${TRAVIS_TAG}" ${DOCKER}
+        - docker run --privileged --rm -v /dev:/dev -v $(pwd):/mnt -e TRAVIS_TAG="${TRAVIS_TAG}" ${DOCKER} /bin/bash /mnt/builder/image-build.sh
       before_cache:
         - cp images/*.zip imgcache
       # after_success:
