@@ -100,8 +100,17 @@ done
 umount -fR ${MOUNT_POINT}
 losetup -d ${DEV_IMAGE}
 
+
+img-chroot ${IMAGE_PATH} copy ${SCRIPTS_DIR}'/assets/init_rpi.sh' '/root/'
+img-chroot ${IMAGE_PATH} copy ${SCRIPTS_DIR}'/assets/hardware_setup.sh' '/root/'
+
+img-chroot ${IMAGE_PATH} exec ${SCRIPTS_DIR}'/image-init.sh' ${IMAGE_VERSION} ${SOURCE_IMAGE}
+
 echo_stamp "image-software.sh"
 img-chroot ${IMAGE_PATH} exec ${SCRIPTS_DIR}'/image-software.sh'
+
+echo_stamp "image-network.sh"
+img-chroot ${IMAGE_PATH} exec ${SCRIPTS_DIR}'/image-network.sh'
 
 echo_stamp "image-validate.sh"
 img-chroot ${IMAGE_PATH} exec ${SCRIPTS_DIR}'/image-validate.sh'
