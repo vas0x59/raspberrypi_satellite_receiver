@@ -1,7 +1,7 @@
 #! /usr/bin/env bash
 
 set -e # Exit immidiately on non-zero result
-
+source img-tool
 SOURCE_IMAGE="https://downloads.raspberrypi.org/raspbian_lite/images/raspbian_lite-2020-02-14/2020-02-13-raspbian-buster-lite.zip"
 
 export DEBIAN_FRONTEND=${DEBIAN_FRONTEND:='noninteractive'}
@@ -47,25 +47,26 @@ echo_stamp "IMAGE_NAME=${IMAGE_NAME}" "INFO"
 IMAGE_PATH="${IMAGES_DIR}/${IMAGE_NAME}"
 echo_stamp "IMAGE_PATH=${IMAGE_PATH}" "INFO"
 
-get_image() {
-  # TEMPLATE: get_image <IMAGE_PATH> <RPI_DONWLOAD_URL>
-  local BUILD_DIR=$(dirname $1)
-  local RPI_ZIP_NAME=$(basename $2)
-  local RPI_IMAGE_NAME=$(echo ${RPI_ZIP_NAME} | sed 's/zip/img/')
+# get_image() {
+#   # TEMPLATE: get_image <IMAGE_PATH> <RPI_DONWLOAD_URL>
+#   local BUILD_DIR=$(dirname $1)
+#   local RPI_ZIP_NAME=$(basename $2)
+#   local RPI_IMAGE_NAME=$(echo ${RPI_ZIP_NAME} | sed 's/zip/img/')
 
-  if [ ! -e "${BUILD_DIR}/${RPI_ZIP_NAME}" ]; then
-    echo_stamp "Downloading original Linux distribution"
-    wget --progress=dot:giga -O ${BUILD_DIR}/${RPI_ZIP_NAME} $2
-    echo_stamp "Downloading complete" "SUCCESS" \
-  else echo_stamp "Linux distribution already donwloaded"; fi
+#   if [ ! -e "${BUILD_DIR}/${RPI_ZIP_NAME}" ]; then
+#     echo_stamp "Downloading original Linux distribution"
+#     wget --progress=dot:giga -O ${BUILD_DIR}/${RPI_ZIP_NAME} $2
+#     echo_stamp "Downloading complete" "SUCCESS" \
+#   else echo_stamp "Linux distribution already donwloaded"; fi
 
-  echo_stamp "Unzipping Linux distribution image" \
-  && unzip -p ${BUILD_DIR}/${RPI_ZIP_NAME} ${RPI_IMAGE_NAME} > $1 \
-  && echo_stamp "Unzipping complete" "SUCCESS" \
-  || (echo_stamp "Unzipping was failed!" "ERROR"; exit 1)
-}
+#   echo_stamp "Unzipping Linux distribution image" \
+#   && unzip -p ${BUILD_DIR}/${RPI_ZIP_NAME} ${RPI_IMAGE_NAME} > $1 \
+#   && echo_stamp "Unzipping complete" "SUCCESS" \
+#   || (echo_stamp "Unzipping was failed!" "ERROR"; exit 1)
+# }
 
-get_image ${IMAGE_PATH} ${SOURCE_IMAGE}
+# get_image ${IMAGE_PATH} ${SOURCE_IMAGE}
+img-tool ${IMG_PATH} load ${SOURCE_IMAGE}
 
 # img-resize ${IMAGE_PATH} max '6G'
 img-tool ${IMG_PATH} size '6G'
