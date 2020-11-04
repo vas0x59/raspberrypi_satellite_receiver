@@ -57,7 +57,7 @@ echo_stamp "Software installing"
 apt-get install -y \
 cmake build-essential python-pip libusb-1.0 libusb-1.0-0-dev \
 python3 python3-dev python3-numpy python3-pip git \
-sox libatlas-base-dev
+sox libatlas-base-dev \
 && echo_stamp "Everything was installed!" "SUCCESS" \
 || (echo_stamp "Some packages wasn't installed!" "ERROR"; exit 1)
 
