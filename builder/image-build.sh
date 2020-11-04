@@ -1,7 +1,7 @@
 #! /usr/bin/env bash
 
 set -e # Exit immidiately on non-zero result
-source img-tool
+# source img-tool
 SOURCE_IMAGE="https://downloads.raspberrypi.org/raspbian_lite/images/raspbian_lite-2020-02-14/2020-02-13-raspbian-buster-lite.zip"
 
 export DEBIAN_FRONTEND=${DEBIAN_FRONTEND:='noninteractive'}
@@ -66,10 +66,10 @@ echo_stamp "IMAGE_PATH=${IMAGE_PATH}" "INFO"
 # }
 
 # get_image ${IMAGE_PATH} ${SOURCE_IMAGE}
-img-tool ${IMG_PATH} load ${SOURCE_IMAGE}
+img-tool ${IMAGE_PATH} load ${SOURCE_IMAGE}
 
 # img-resize ${IMAGE_PATH} max '6G'
-img-tool ${IMG_PATH} size '6G'
+img-tool ${IMAGE_PATH} size '6G'
 
 if [[ ! -z ${TRAVIS_TAG} ]]; then
   cd ${REPO_DIR}
@@ -126,6 +126,6 @@ img-tool ${IMAGE_PATH} exec ${SCRIPTS_DIR}'/image-validate.sh' \
 && echo_stamp "validate - OK" "SUCCESS" \
 || (echo_stamp "validate - ERROR" "ERROR"; exit 1)
 
-img-tool ${IMG_PATH} size $(img-tool ${IMG_PATH} size | grep "IMG_MIN_SIZE" | cut -b 15-)
+img-tool ${IMAGE_PATH} size $(img-tool ${IMAGE_PATH} size | grep "IMG_MIN_SIZE" | cut -b 15-)
 
 echo_stamp "DONE"
