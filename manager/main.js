@@ -33,10 +33,30 @@ io.on('connection', (socket) => {
 });
 io.of("/tle_updater").on("connection", (socket) => {
     console.log("tle_updater");
+    let mes = {
+        "tle_directory":cm.get_main("tle_directory"),
+        "tle_sources":cm.get_main("tle_sources"),
+        "satellites_list":cm_m.satellites_d_to_l(cm_m.ungroup_satellites(cm.get_main("satellites")))
+    };
+    console.log("tle update message", mes);
+    socket.on("update_ans", (mes) => {
+        console.log("update_ans", mes);
+    });
+    socket.emit("update", mes);
 });
-io.of("/tle_updater").on("update_ans", () => {
-    console.log("update_ans");
-});
+
+setInterval(() => {
+    console.log("tle_updater");
+    let mes = {
+        "tle_directory":cm.get_main("tle_directory"),
+        "tle_sources":cm.get_main("tle_sources"),
+        "satellites_list":cm_m.satellites_d_to_l(cm_m.ungroup_satellites(cm.get_main("satellites")))
+    };
+    console.log("tle update message", mes);
+    io.of("/tle_updater").emit("update", mes);
+}, cm.get_main("tle_update_period")*60*60*1000)
+
+
  
 http.listen(5000, () => {
     console.log('listening on *:5000');

@@ -14,7 +14,7 @@ function satellites_d_to_l(sats) {
 function ungroup_satellites(sats_g) {
     let sats_ug = {};
     for (let key_t in sats_g) {
-        let el_t = sats_g[key];
+        let el_t = sats_g[key_t];
         for (let key_s in el_t){
             let el_s = el_t[key_s];
             el_s["type"] = key_t;
@@ -34,19 +34,22 @@ class ConfigManager {
     }
     load_main() {
         this.main_config = JSON.parse(fs.readFileSync(this.configs_path + "/main_config.json").toString());
+        console.log(this.main_config);
+        console.log(satellites_d_to_l(ungroup_satellites(this.main_config["satellites"])));
     }
     save_main() {
         fs.writeFileSync(this.configs_path + "/main_config.json", JSON.stringify(this.main_config));
     }
     load_all_sats_type_configs() {
         let list_of_sats = satellites_d_to_l(ungroup_satellites(this.get_main("satellites")));
-        for (let el in list_of_sats) {
-            let path_to_config = this.configs_path + "/satellites/" + el["type"] + "/" + el["type"] + "_receiver.json";
+        for (let key in list_of_sats) {
+            let el = list_of_sats[key];
+            let path_to_config = this.configs_path + "/satellites/" + el["type"] + "/receiver.json";
             this.receivers_configs[el["type"]] = JSON.parse(fs.readFileSync(path_to_config).toString());
         }
     }
     save_receiver(type){
-        let path_to_config = this.configs_path + "/satellites/" + type + "/" + type + "_receiver.json";
+        let path_to_config = this.configs_path + "/satellites/" + type + "/receiver.json";
         fs.writeFileSync(path_to_config, JSON.stringify(this.receivers_configs[type]));
     }
 

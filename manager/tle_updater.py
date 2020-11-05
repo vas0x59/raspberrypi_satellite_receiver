@@ -6,7 +6,15 @@ import time
 # import http
 import socketio
 from typing import *
+import os
+import sys
+
 sio = socketio.Client()
+
+def creat_prev_folders(path: str):
+    path_folder = "/".join(path.split("/")[:-1])
+    if not os.path.exists(path_folder):
+        os.makedirs(path_folder)
 
 def download_tle(tle_sources: List[str], tle_dir: str):
     concatenated_content = ""
@@ -14,9 +22,11 @@ def download_tle(tle_sources: List[str], tle_dir: str):
         r = requests.get(tle_source, allow_redirects=True)
         tle_source_name = tle_source.split("/")[-1].split(".")[0] + ".tle"
         tle_source_file_name = tle_dir + "/original/" + tle_source_name
-        concatenate_content += r.content
-        open(tle_source_file_name, "w").write(r.content)
-    
+        str_content = r.content.decode()
+        concatenated_content += str_content
+        creat_prev_folders(tle_source_file_name)
+        open(tle_source_file_name, "w").write(str_content)
+    # creat_prev_folders(tle_source_file_name)
     open(tle_dir + "/all.tle", "w").write(concatenated_content)
     
 
@@ -38,14 +48,19 @@ def split_tle_for_satellites(satellites: List[dict], tle_dir: str):
 
 
     for satellite in satellites:
-        sat_name = satellite["name"]
+        sat_name = satellite["name"].strip()
         sat_type = satellite["type"]
         out_file = "{}/{}/{}.tle".format(tle_dir, sat_type, sat_name)
-        if sat_name.strip() in all_sat_tle:
-            sat_tle = all_sat_tle[sat_tle]
+        creat_prev_folders(out_file)
+        if sat_name in all_sat_tle.keys():
+            sat_tle = all_sat_tle[sat_name]
             open(out_file, "w").write(sat_tle)
 
 def tle_update(tle_dir: str, tle_sources: List[str], satellites: List[dict]):
+    if not os.path.exists(tle_dir):
+        os.makedirs(tle_dir)
+    if not os.path.exists(tle_dir + "/last_update.json"):
+        open(tle_dir + "/last_update.json", "w+").write(json.dumps({"last_update_datetime":-1}))
     tle_dir_json = json.loads(open(tle_dir+"/last_update.json", "r").read())
     tle_dir_json["last_update_datetime"] = str(datetime.now())
     download_tle(tle_sources, tle_dir)
@@ -68,14 +83,16 @@ def tle_update(tle_dir: str, tle_sources: List[str], satellites: List[dict]):
 
 # while 
 
-@sio.on("update", namespace="tle_updater")
-def callback(sid, msg):
-    print("update")
+@sio.on("update", namespace="/tle_updater")
+def callback(msg):
+    # print("update", data)
+    # data = json.loads(data)
     tle_dir = msg["tle_directory"]
     tle_sources = msg["tle_sources"]
-    satellites = msg["satellites_list"] # {"type":"NOAA", "name":"NOAA 15"}
+    satellites = msg["satellites_list"]   # {"type":"NOAA", "name":"NOAA 15"}
+    print(msg)
     tle_update(tle_dir, tle_sources, satellites)
-    sio.emit("update_ans",{"tle_dir":tle_dir, "datetime":str(datetime.now())}, namespace="tle_updater")
+    sio.emit("update_ans", {"tle_dir": tle_dir, "last_update_datetime": str(datetime.now())}, namespace="/tle_updater")
 
 def connect():
     print("I'm connected!")

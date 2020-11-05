@@ -1,6 +1,6 @@
 {
     "output_directory": "<path to output>",
-    "tle_directory": "./tle",
+    "tle_directory": "/home/vasily/Projects/raspberrypi_satellite_receiver/tle",
     "tle_sources": [
         "https://celestrak.com/NORAD/elements/weather.txt",
         "https://celestrak.com/NORAD/elements/amateur.txt"
