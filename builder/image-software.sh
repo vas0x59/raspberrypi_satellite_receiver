@@ -91,14 +91,29 @@ echo -ne 'YES\n' | wxtoimg --help \
 # echo "wxtoimg: $(wxtoimg --help)"
 
 echo_stamp "Install python libs"
-my_travis_retry pip3 install pandas pyorbital ephem tweepy Pillow
+my_travis_retry pip3 install pandas pyorbital ephem tweepy Pillow requests socketio
 
 echo_stamp "Install nodejs"
 
-curl -sL https://deb.nodesource.com/setup_14.x | bash -
-apt-get install -y nodejs
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.36.0/install.sh | bash
+
+export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || printf %s "${XDG_CONFIG_HOME}/nvm")"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" # This loads nvm
+nvm install v14.15.0
+export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || printf %s "${XDG_CONFIG_HOME}/nvm")"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" # This loads nvm
+
+# curl -sL https://deb.nodesource.com/setup_14.x | bash -
+# apt-get install -y nodejs
 echo_stamp "node.js version: $(node --version)" "SUCCESS"
 
+echo_stamp "Install nodejs modules"
+# npm install -g express socket.io
+cd /home/pi/rpi_satellite_receiver/manager
+npm install
+cd
+
+echo_stamp "nodejs modules" "SUCCESS"
 
 echo_stamp "Change owner to pi"
 chown -Rf pi:pi /home/pi/rpi_satellite_receiver/
