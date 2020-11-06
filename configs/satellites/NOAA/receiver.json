@@ -12,7 +12,10 @@
             "apt_freq": 137.62
         },
         "NOAA 18" : {
-            "apt_freq": 137.62
+            "apt_freq": 137.9125
+        },
+        "NOAA 19" : {
+            "apt_freq": 137.1
         }
     }
 }

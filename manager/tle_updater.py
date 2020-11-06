@@ -11,10 +11,12 @@ import sys
 
 sio = socketio.Client()
 
+
 def creat_prev_folders(path: str):
     path_folder = "/".join(path.split("/")[:-1])
     if not os.path.exists(path_folder):
         os.makedirs(path_folder)
+
 
 def download_tle(tle_sources: List[str], tle_dir: str):
     concatenated_content = ""
@@ -29,7 +31,6 @@ def download_tle(tle_sources: List[str], tle_dir: str):
     # creat_prev_folders(tle_source_file_name)
     open(tle_dir + "/all.tle", "w").write(concatenated_content)
     
-
 
 def split_tle_for_satellites(satellites: List[dict], tle_dir: str):
     """
@@ -46,7 +47,6 @@ def split_tle_for_satellites(satellites: List[dict], tle_dir: str):
         elif current_sat in all_sat_tle.keys():
             all_sat_tle[current_sat] += line
 
-
     for satellite in satellites:
         sat_name = satellite["name"].strip()
         sat_type = satellite["type"]
@@ -55,6 +55,7 @@ def split_tle_for_satellites(satellites: List[dict], tle_dir: str):
         if sat_name in all_sat_tle.keys():
             sat_tle = all_sat_tle[sat_name]
             open(out_file, "w").write(sat_tle)
+
 
 def tle_update(tle_dir: str, tle_sources: List[str], satellites: List[dict]):
     if not os.path.exists(tle_dir):
@@ -92,10 +93,13 @@ def callback(msg):
     satellites = msg["satellites_list"]   # {"type":"NOAA", "name":"NOAA 15"}
     print(msg)
     tle_update(tle_dir, tle_sources, satellites)
-    sio.emit("update_ans", {"tle_dir": tle_dir, "last_update_datetime": str(datetime.now())}, namespace="/tle_updater")
+    sio.emit("update_ans", {"tle_dir": tle_dir, "last_update_datetime": str(datetime.utcnow())}, namespace="/tle_updater")
 
+
+@sio.event
 def connect():
     print("I'm connected!")
+
 
 sio.connect("http://localhost:5000", namespaces=["/tle_updater"])
 sio.wait()

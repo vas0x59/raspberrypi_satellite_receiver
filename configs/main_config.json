@@ -23,6 +23,10 @@
             "NOAA 18":{
                 "enabled":true,
                 "priority": 1
+            },
+            "NOAA 19":{
+                "enabled":true,
+                "priority": 1
             }
         }
     }
