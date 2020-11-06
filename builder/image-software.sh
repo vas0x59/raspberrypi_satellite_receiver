@@ -116,6 +116,11 @@ cd
 
 echo_stamp "nodejs modules" "SUCCESS"
 
+echo_stamp "Build UI"
+cd /home/pi/rpi_satellite_receiver/manager
+npm build
+echo_stamp "Build UI" "SUCCESS"
+
 echo_stamp "Change owner to pi"
 chown -Rf pi:pi /home/pi/rpi_satellite_receiver/
 
