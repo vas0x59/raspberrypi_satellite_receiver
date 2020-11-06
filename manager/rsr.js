@@ -43,12 +43,14 @@ g.event.on("/predict_pass/predict", (_) => {
         //     g.event.emit("/tle_updater/update", {})
         // }, 5000)
         g.event.emit("/tle_updater/update", {})
-        g.event.on("/tle_updater/update_ans", () => {
-            // clearInterval(interval_id)
+        let a = () => {
             send_predict_pass_predict();
-        })
+            g.event.removeListener("/tle_updater/update_ans", a)
+        }
+        g.event.on("/tle_updater/update_ans", a)
     }
     else {
+        console.log("123123")
         send_predict_pass_predict();
     }
 })
@@ -74,12 +76,15 @@ io.of("/predict_pass").on("connection", (socket) => {
         g.passes = mes["ans"]
         g.last_pass_predict_time = Date.parse(mes["last_predict_datetime"])
         // console.log('g.last_pass_predict_time', g.last_pass_predict_time)
-        // g.event.emit("/predict_pass/predict_ans", mes)
+        g.event.emit("/predict_pass/predict_ans", mes)
+        // socket.removeListener('predict_ans', a);
     })
+
     // g.event.emit("/predict_pass/predict", {})
 })
 
 function predict_pass_interval_f() {
+    console.log("predict_pass_interval_f")
     g.event.emit("/predict_pass/predict", {})
 }
 function tle_update_interval_f() {

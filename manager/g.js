@@ -7,6 +7,7 @@ const RSR_CONFIGS_PATH = process.env.RSR_CONFIGS_PATH
 let cm = new cm_m.ConfigManager(RSR_CONFIGS_PATH)
 
 class GlobalEvents extends EventEmitter {}
+
 let event = new GlobalEvents()
 
 let passes = []
