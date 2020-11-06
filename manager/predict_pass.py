@@ -108,7 +108,7 @@ def callback(msg):
     prev_predict = correct_from_json(msg["prev_predict"])
     print(msg)
     ans = correct_for_json(do_predict(tle_dir, satellites, station_location, min_elevation, for_next_hours, prev_predict))
-    sio.emit("predict_ans", {"ans": ans, "tle_dir": tle_dir, "last_update_datetime": str(datetime.utcnow())},
+    sio.emit("predict_ans", {"ans": ans, "tle_dir": tle_dir, "last_predict_datetime": str(datetime.utcnow())},
              namespace="/predict_pass")
 
 
