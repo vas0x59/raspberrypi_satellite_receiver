@@ -92,10 +92,10 @@ echo_stamp "Mount dirs ${MOUNT_POINT} & ${MOUNT_POINT}/boot"
 mount "${DEV_IMAGE}p2" ${MOUNT_POINT}
 mount "${DEV_IMAGE}p1" ${MOUNT_POINT}/boot
 
-mkdir -p ${MOUNT_POINT}'/home/pi/rpi_satellite_receiver/'
+mkdir -p ${MOUNT_POINT}'/home/pi/raspberrypi_satellite_receiver/'
 for dir in ${REPO_DIR}/*; do
   if [[ $dir != *"images" && $dir != *"imgcache" ]]; then
-    cp -r $dir ${MOUNT_POINT}'/home/pi/rpi_satellite_receiver/'$(basename $dir)
+    cp -r $dir ${MOUNT_POINT}'/home/pi/raspberrypi_satellite_receiver/'$(basename $dir)
   fi;
 done
 

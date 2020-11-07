@@ -83,7 +83,7 @@ else
     echo_stamp "rtl-sdr install done" "SUCCESS"
 fi
 echo_stamp "Install wxtoimg"
-dpkg -i "/home/pi/rpi_satellite_receiver/third_party/wxtoimg-armhf-2.11.2-beta.deb"
+dpkg -i "/home/pi/raspberrypi_satellite_receiver/third_party/wxtoimg-armhf-2.11.2-beta.deb"
 
 echo -ne 'YES\n' | wxtoimg --help \
 && echo "wxtoimg_0" \
@@ -111,27 +111,27 @@ echo_stamp "node.js version: $(node --version)" "SUCCESS"
 
 echo_stamp "Install nodejs modules"
 # npm install -g express socket.io
-cd /home/pi/rpi_satellite_receiver/manager
+cd /home/pi/raspberrypi_satellite_receiver/manager
 npm install
 cd
 
 echo_stamp "nodejs modules" "SUCCESS"
 
 echo_stamp "Build UI"
-cd /home/pi/rpi_satellite_receiver/manager
+cd /home/pi/raspberrypi_satellite_receiver/manager
 npm run build
 cd
 echo_stamp "Build UI" "SUCCESS"
 
 echo_stamp "---"
-cd /home/pi/rpi_satellite_receiver
+cd /home/pi/raspberrypi_satellite_receiver
 python3 ./utils/main_config_for_rpi.py $RSR_CONFIGS_PATH/main_config.t.json $RSR_CONFIGS_PATH/main_config.json
 cat $RSR_CONFIGS_PATH/main_config.json
 cd
 echo_stamp "---"
 
 echo_stamp "Change owner to pi"
-chown -Rf pi:pi /home/pi/rpi_satellite_receiver/
+chown -Rf pi:pi /home/pi/raspberrypi_satellite_receiver/
 
 echo_stamp "End of software installation"
 
