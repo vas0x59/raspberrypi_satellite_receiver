@@ -3,7 +3,8 @@ import json
 from pyorbital.orbital import Orbital
 # import numpy
 # import pandas
-from datetime import datetime
+# from datetime import datetime
+import datetime
 import time
 import threading
 import socketio
@@ -14,14 +15,14 @@ sio = socketio.Client()
 
 def predict_next_passes(tle_dir: str, satellites: dict, station_location: dict, min_elevation: float, for_next_hours: int) -> list:
     all_passes = []
-    time_now_utc = datetime.utcnow()
+    time_now_utc = datetime.datetime.utcnow()
 
     for sat_name in satellites:
         sat = satellites[sat_name]
         sat_type = sat["type"]
 
         orbital = Orbital(sat_name, tle_file="{}/{}/{}.tle".format(tle_dir, sat_type, sat_name))
-        passes = orbital.get_next_passes(time_now_utc, for_next_hours, station_location["lon"], station_location["lat"], station_location["alt"], horizon=min_elevation)
+        passes = orbital.get_next_passes(time_now_utc + datetime.timedelta(seconds=-60*20), for_next_hours, station_location["lon"], station_location["lat"], station_location["alt"], horizon=min_elevation)
 
         all_passes += [{"type": sat_type, "name": sat_name, "rise_time": pas[0], "fall_time": pas[1], "duration": (pas[1] - pas[0]).total_seconds()} for pas in passes]
     all_passes.sort(key=lambda t: t["rise_time"])
@@ -29,11 +30,11 @@ def predict_next_passes(tle_dir: str, satellites: dict, station_location: dict, 
     return all_passes
 
 
-def check_datetime(time_to_check: datetime, datetimes: List[datetime]) -> bool:
+def check_datetime(time_to_check: datetime.datetime, datetimes: List[datetime.datetime]) -> bool:
     return (time_to_check >= min(datetimes)) and (time_to_check <= max(datetimes))
 
 
-def check_datetime2(datetimes_1: List[datetime], datetimes_2: List[datetime]) -> bool:
+def check_datetime2(datetimes_1: List[datetime.datetime], datetimes_2: List[datetime.datetime]) -> bool:
     return check_datetime(datetimes_1[0], datetimes_2) and check_datetime(datetimes_1[1], datetimes_2) or \
         check_datetime(datetimes_2[0], datetimes_1) and check_datetime(datetimes_2[1], datetimes_1)
 
@@ -80,8 +81,8 @@ def correct_from_json(ans: List[dict]) -> List[dict]:
     ans_s = list()
     for a in ans:
         el = a
-        el["rise_time"] = datetime.fromisoformat(el["rise_time"])
-        el["fall_time"] = datetime.fromisoformat(el["fall_time"])
+        el["rise_time"] = datetime.datetime.fromisoformat(el["rise_time"])
+        el["fall_time"] = datetime.datetime.fromisoformat(el["fall_time"])
         # el["duration"] = datetime.fromisoformat(el["duration"])
         ans_s.append(el)
     return ans_s
@@ -119,7 +120,8 @@ def callback(msg):
 
     print(msg)
     ans = correct_for_json(do_predict(tle_dir, satellites, station_location, min_elevation, for_next_hours, prev_predict))
-    sio.emit("predict_ans", {"ans": ans, "tle_dir": tle_dir, "last_predict_datetime": str(datetime.utcnow())},
+    # ans = [{'type': 'NOAA', 'name': 'NOAA 19', 'rise_time': str(datetime(2020, 11, 7, 9, 54, 6, 95777)), 'fall_time': str(datetime(2020, 11, 7, 10, 59, 29, 481706)), 'duration': 5.385929}]
+    sio.emit("predict_ans", {"ans": ans, "tle_dir": tle_dir, "last_predict_datetime": str(datetime.datetime.utcnow())},
              namespace="/predict_pass")
 
 

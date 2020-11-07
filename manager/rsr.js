@@ -72,7 +72,7 @@ io.of("/predict_pass").on("connection", (socket) => {
     g.modules_connected.predict_pass = true
 
     socket.on("predict_ans", (mes) => {
-        console.log("predict_ans")
+        console.log("predict_ans", mes)
         g.passes = mes["ans"]
         g.last_pass_predict_time = Date.parse(mes["last_predict_datetime"])
         // console.log('g.last_pass_predict_time', g.last_pass_predict_time)
@@ -101,10 +101,10 @@ io.of("/receivers/NOAA").on("connection", (socket) => {
         socket.emit("pass_schedule", {"passes": utils.get_passes_by_type_satellites(g.passes, "NOAA")})
     })
     socket.on("pass_begin", (m) => {
-        g.event.emit("pass_begin", {"name":m.name, "type":m.type})
+        g.event.emit("pass_begin", {"name":m.pass.name, "type":m.pass.type})
     })
     socket.on("pass_end", (m) => {
-        g.event.emit("pass_end", {"name":m.name, "type":m.type})
+        g.event.emit("pass_end", {"name":m.pass.name, "type":m.pass.type})
     })
     g.event.on("/predict_pass/predict/new", (_) => {
         socket.emit("pass_schedule", {"passes": utils.get_passes_by_type_satellites(g.passes, "NOAA")})

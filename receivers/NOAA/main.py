@@ -129,11 +129,25 @@ process(pass.sat_name, pass.duration, pass.start_time)
 
 def passes_from_json(ans: List[dict]) -> List[dict]:
     ans_s = list()
-    for a in ans:
-        el = a
-        el["rise_time"] = datetime.fromisoformat(el["rise_time"])
-        el["fall_time"] = datetime.fromisoformat(el["fall_time"])
+    for i in range(len(ans)):
+        el = dict(ans[i])
+        # el = ans[a]
+        # print("bbbbbb", el["rise_time"], el["fall_time"])
+        el["rise_time"] = datetime.fromisoformat(ans[i]["rise_time"])
+        el["fall_time"] = datetime.fromisoformat(ans[i]["fall_time"])
+        # print("aaaaaaa", el["rise_time"], el["fall_time"])
         # el["duration"] = datetime.fromisoformat(el["duration"])
+        ans_s.append(el)
+    return ans_s
+
+
+def passes_to_json(ans: List[dict]) -> List[dict]:
+    ans_s = list()
+    for i in range(len(ans)):
+        el = ans[i].copy()
+        el["rise_time"] = str(ans[i]["rise_time"])
+        el["fall_time"] = str(ans[i]["fall_time"])
+        # el["duration"] = str(el["duration"])
         ans_s.append(el)
     return ans_s
 
@@ -145,7 +159,7 @@ def ps_callback(msg):
     passes_msg = passes_from_json(msg["passes"])
     passes_msg = [i for i in passes_msg if i["fall_time"] > datetime.utcnow()]
     passes = passes_msg
-    print("pass_schedule", msg)
+    print("pass_schedule")
 
 
 @sio.on("config", namespace="/receivers/NOAA")
@@ -173,20 +187,23 @@ sio.emit("pass_schedule/get", {"":""}, namespace="/receivers/NOAA")
 
 while True:
     if len(passes) > 0:
-        next_pass = passes[-1]
-        if abs((next_pass["rise_time"] - datetime.utcnow()).total_seconds()) < 2:
-            print("Start st2")
+        next_pass = passes[0]
+        print(next_pass)
+        # print(datetime.utcnow() >= next_pass["fall_time"])
+        if next_pass["rise_time"] <= datetime.utcnow() <= next_pass["fall_time"]:
+            print("Start st2", next_pass)
             while datetime.utcnow() < next_pass["rise_time"]:
                 time.sleep(0.05)
 
-            sio.emit("pass_begin", {"pass": next_pass}, namespace="/receivers/NOAA")
+            sio.emit("pass_begin", {"pass": passes_to_json([next_pass])[0]}, namespace="/receivers/NOAA")
 
             print(next_pass["name"], next_pass["duration"], next_pass["rise_time"], next_pass["fall_time"], noaa_config)
             # process(next_pass["name"], next_pass["duration"], next_pass["rise_time"], next_pass["fall_time"], noaa_config)
-            while datetime.utcnow() >= next_pass["fall_time"]:
+            print("RECORD END wait for end of pass")
+            while datetime.utcnow() <= next_pass["fall_time"]:
                 time.sleep(0.05)
             print("Exit st2")
-            sio.emit("pass_end", {"pass":next_pass}, namespace="/receivers/NOAA")
+            sio.emit("pass_end", {"pass":passes_to_json([next_pass])[0]}, namespace="/receivers/NOAA")
             # sio.emit("pass_schedule/get", {}, namespace="/receivers/NOAA")
         passes = sorted([i for i in passes if i["fall_time"] > datetime.utcnow()], key=lambda x: x["rise_time"])
     time.sleep(0.1)
