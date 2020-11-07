@@ -5,8 +5,11 @@ const server = http.createServer(app)
 const io = require('socket.io')(server)
 const path = require("path")
 let g = require("./g.js")
+var serveIndex = require('serve-index')
 
 app.use('/', express.static(path.join(__dirname, 'public')))
+
+app.use('/output', express.static(g.cm.get_main("output_directory")), serveIndex(g.cm.get_main("output_directory"), {'icons': true}))
 
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public/index.html'))

@@ -2,7 +2,8 @@
 
 
 set -e # Exit immidiately on non-zero result
-
+RSR_PATH="/home/pi/raspberrypi_satellite_receiver"
+RSR_CONFIGS_PATH="/home/pi/raspberrypi_satellite_receiver/configs"
 # REPO_DIR="/mnt"
 
 echo_stamp() {
@@ -121,6 +122,13 @@ cd /home/pi/rpi_satellite_receiver/manager
 npm run build
 cd
 echo_stamp "Build UI" "SUCCESS"
+
+echo_stamp "---"
+cd /home/pi/rpi_satellite_receiver
+python3 ./utils/main_config_for_rpi.py $RSR_CONFIGS_PATH/main_config.t.json $RSR_CONFIGS_PATH/main_config.json
+cat $RSR_CONFIGS_PATH/main_config.json
+cd
+echo_stamp "---"
 
 echo_stamp "Change owner to pi"
 chown -Rf pi:pi /home/pi/rpi_satellite_receiver/
