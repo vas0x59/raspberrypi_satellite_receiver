@@ -4,3 +4,4 @@ tle
 tle/*
 manager/public/build/bundle.js
 manager/public/build/bundle.js.LICENSE.txt
+configs/main_config.json
