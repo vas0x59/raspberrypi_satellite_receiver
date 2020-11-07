@@ -95,17 +95,24 @@ def do_predict(tle_dir: str, satellites: dict, station_location: dict, min_eleva
 
     print("predicted", len(ans), "passes of", len(satellites.items()), "satellites", f"in {time.time()-st_time}s.")
     return ans
-
+prev_conf = None
 
 @sio.on("predict", namespace="/predict_pass")
 def callback(msg):
+    global prev_conf
     print("callback")
     tle_dir = msg["tle_directory"]
     satellites = msg["satellites"]
     station_location = msg["station_location"]
     min_elevation = msg["min_elevation"]
     for_next_hours = msg["for_next_hours"]
-    prev_predict = correct_from_json(msg["prev_predict"])
+    only_conf_msg = {i: j for i, j in msg.items() if i != "prev_predict"}
+    prev_predict = []
+    if prev_conf is not None:
+        if prev_conf == msg:
+            prev_predict = correct_from_json(msg["prev_predict"])
+    prev_conf = only_conf_msg
+
     print(msg)
     ans = correct_for_json(do_predict(tle_dir, satellites, station_location, min_elevation, for_next_hours, prev_predict))
     sio.emit("predict_ans", {"ans": ans, "tle_dir": tle_dir, "last_predict_datetime": str(datetime.utcnow())},

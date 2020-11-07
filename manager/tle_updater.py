@@ -61,9 +61,10 @@ def tle_update(tle_dir: str, tle_sources: List[str], satellites: List[dict]):
     if not os.path.exists(tle_dir):
         os.makedirs(tle_dir)
     if not os.path.exists(tle_dir + "/last_update.json"):
-        open(tle_dir + "/last_update.json", "w+").write(json.dumps({"last_update_datetime":-1}))
+        open(tle_dir + "/last_update.json", "w+").write(json.dumps({"last_update_datetime":-1, "last_update_datetime_local":-1}))
     tle_dir_json = json.loads(open(tle_dir+"/last_update.json", "r").read())
-    tle_dir_json["last_update_datetime"] = str(datetime.now())
+    tle_dir_json["last_update_datetime_local"] = str(datetime.now())
+    tle_dir_json["last_update_datetime"] = str(datetime.utcnow())
     download_tle(tle_sources, tle_dir)
     split_tle_for_satellites(satellites, tle_dir)
     open(tle_dir+"/last_update.json", "w").write(json.dumps(tle_dir_json))
