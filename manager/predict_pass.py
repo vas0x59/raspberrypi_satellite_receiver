@@ -11,6 +11,7 @@ from typing import *
 
 sio = socketio.Client()
 
+
 def predict_next_passes(tle_dir: str, satellites: dict, station_location: dict, min_elevation: float, for_next_hours: int) -> list:
     all_passes = []
     time_now_utc = datetime.utcnow()
@@ -95,7 +96,10 @@ def do_predict(tle_dir: str, satellites: dict, station_location: dict, min_eleva
 
     print("predicted", len(ans), "passes of", len(satellites.items()), "satellites", f"in {time.time()-st_time}s.")
     return ans
+
+
 prev_conf = None
+
 
 @sio.on("predict", namespace="/predict_pass")
 def callback(msg):

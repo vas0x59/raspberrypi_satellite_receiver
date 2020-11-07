@@ -4,13 +4,15 @@ import subprocess
 import json 
 import time
 import threading
-# from typing import *
-
+from typing import *
+import  socketio
+# import datetime
+from datetime import datetime
 # config
 # main_config = {}
 station_location = {}
 tle_dir_path = ""
-
+#
 noaa_config = {}
 # class NOAA_Satellite:
 #     def __init__(self):
@@ -23,11 +25,25 @@ noaa_config = {}
 #         self.end_time = end_time
 #         self.duration = duration
 
-noaa_satellites = {}
+# noaa_satellites = {}
 
-next_pass = None
+# next_pass = None
 
-def record(freq: float, file_out: str, duration: float, sample_rate = 60000: int, dongle_gain = 50: int, bias_tee = "enable_bias_tee": str, wav_rate: int = 11025) -> str:
+sio = socketio.Client()
+
+ans1 = False
+ans2 = False
+
+passes = []
+# passed_passes_times = []
+
+def creat_prev_folders(path: str):
+    path_folder = "/".join(path.split("/")[:-1])
+    if not os.path.exists(path_folder):
+        os.makedirs(path_folder)
+
+
+def record(freq: float, file_out: str, duration: float, sample_rate: int = 60000, dongle_gain: int = 50, bias_tee: str = "enable_bias_tee" , wav_rate: int = 11025) -> str:
     """
     freq - in MHz, sample, 
 
@@ -36,7 +52,7 @@ def record(freq: float, file_out: str, duration: float, sample_rate = 60000: int
     """
     wav_out_path = file_out
     raw_out_path = ".".join(file_out.split(".")[:-1] + ["raw"])
-
+    # creat_prev_folders(wav_out_path)
     # Run rtl_fm (record)
     subprocess.call(args=[
         "timeout", str(duration), 
@@ -68,6 +84,7 @@ def record(freq: float, file_out: str, duration: float, sample_rate = 60000: int
     ])
     return wav_out_path
 
+
 def wx_to_img(file_in: str, file_out: str, enhancement: str) -> str:
     subprocess.call(args=[
         "wxtoimg", "-o",
@@ -76,23 +93,33 @@ def wx_to_img(file_in: str, file_out: str, enhancement: str) -> str:
         file_out
     ])
     return file_out
-# record()
 
-def process(sat_name: str, pass_duration: float, pass_time):
+
+def process(sat_name: str, pass_duration: float, pass_time_rise: datetime, pass_time_fall: datetime, noaa_config: dict):
+    # global passed_passes_times
     output_path = ""
     freq = noaa_config["satellites"][sat_name]["apt_freq"]
     duration = pass_duration
 
-    datetime_str = get_datetime(pass_time)
+    datetime_str = str(pass_time_rise)
     sat_output_folder = "{}/NOAA/{}/{}".format(output_path, sat_name, datetime_str)
+    creat_prev_folders(sat_output_folder)
     wav_file = sat_output_folder+"/wav/{}_{}_{}.wav".format(sat_name, freq, datetime_str)
-    
+    creat_prev_folders(wav_file)
+
     record(freq, wav_file, duration, dongle_gain=noaa_config["radio"]["dongle_gain"], bias_tee=noaa_config["radio"]["bias_tee"])
 
-    enhancements = []
+    images_folder = sat_output_folder+"/image"
+    creat_prev_folders(images_folder)
+
+    enhancements = noaa_config["wx_to_img"]["enhancements"]
     for e in enhancements:
-        image_file = sat_output_folder+"/image/{}_{}_{}.jpg".format(sat_name, e, datetime_str)
+        image_file = images_folder+"/{}_{}_{}.jpg".format(sat_name, e, datetime_str)
         wx_to_img(wav_file, image_file, e)
+    # passed_passes_times.append(pass_time_rise)
+    # if len(passed_passes_times) > 50:
+    #     passed_passes_times = passed_passes_times[1:]
+
 
 '''
 -> pass
@@ -100,11 +127,67 @@ process(pass.sat_name, pass.duration, pass.start_time)
 '''
 
 
-# while True:
-#     if next_pass is None:
-#         get_next_pass()
-#     else:
+def passes_from_json(ans: List[dict]) -> List[dict]:
+    ans_s = list()
+    for a in ans:
+        el = a
+        el["rise_time"] = datetime.fromisoformat(el["rise_time"])
+        el["fall_time"] = datetime.fromisoformat(el["fall_time"])
+        # el["duration"] = datetime.fromisoformat(el["duration"])
+        ans_s.append(el)
+    return ans_s
 
-#         process()
-#         next_pass = None
-#         get_next_pass()
+
+@sio.on("pass_schedule", namespace="/receivers/NOAA")
+def ps_callback(msg):
+    global passes, ans1
+    ans1 = True
+    passes_msg = passes_from_json(msg["passes"])
+    passes_msg = [i for i in passes_msg if i["fall_time"] > datetime.utcnow()]
+    passes = passes_msg
+    print("pass_schedule", msg)
+
+
+@sio.on("config", namespace="/receivers/NOAA")
+def c_callback(msg):
+    global noaa_config, station_location, tle_dir_path, ans2
+    ans2 = False
+    noaa_config = msg["config"]
+    station_location = msg["station_location"]
+    tle_dir_path = msg["tle_directory"]
+    print("config", msg)
+
+
+@sio.event
+def connect():
+    print("I'm connected!")
+    # sio.emit("config/get", {"":""}, namespace="/receivers/NOAA")
+    # sio.emit("pass_schedule/get", {"":""}, namespace="/receivers/NOAA")
+    # print("Send")
+
+
+sio.connect("http://localhost:5000", namespaces=["/receivers/NOAA", "/receivers"])
+
+sio.emit("config/get", {"":""}, namespace="/receivers/NOAA")
+sio.emit("pass_schedule/get", {"":""}, namespace="/receivers/NOAA")
+
+while True:
+    if len(passes) > 0:
+        next_pass = passes[-1]
+        if abs((next_pass["rise_time"] - datetime.utcnow()).total_seconds()) < 2:
+            print("Start st2")
+            while datetime.utcnow() < next_pass["rise_time"]:
+                time.sleep(0.05)
+
+            sio.emit("pass_begin", {"pass": next_pass}, namespace="/receivers/NOAA")
+
+            print(next_pass["name"], next_pass["duration"], next_pass["rise_time"], next_pass["fall_time"], noaa_config)
+            # process(next_pass["name"], next_pass["duration"], next_pass["rise_time"], next_pass["fall_time"], noaa_config)
+            while datetime.utcnow() >= next_pass["fall_time"]:
+                time.sleep(0.05)
+            print("Exit st2")
+            sio.emit("pass_end", {"pass":next_pass}, namespace="/receivers/NOAA")
+            # sio.emit("pass_schedule/get", {}, namespace="/receivers/NOAA")
+        passes = sorted([i for i in passes if i["fall_time"] > datetime.utcnow()], key=lambda x: x["rise_time"])
+    time.sleep(0.1)
+sio.wait()

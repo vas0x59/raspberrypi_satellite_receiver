@@ -18,7 +18,8 @@ let last_pass_predict_time = NaN
 // let pass_predict_connected = false
 let modules_connected = {
     "tle_updater": false,
-    "predict_pass": false
+    "predict_pass": false,
+    "NOAA": false
 }
 
 module.exports.passes = passes

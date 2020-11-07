@@ -23,7 +23,15 @@ function ungroup_satellites(sats_g) {
     }
     return sats_ug
 }
-
+function get_passes_by_type_satellites(passes, type) {
+    let passes_r = []
+    for (let i in passes) {
+        if (passes[i]["type"] === type) {
+            passes_r.push(passes[i])
+        }
+    }
+    return passes_r
+}
 
 class ConfigManager {
     constructor(configs_path) {
@@ -60,6 +68,9 @@ class ConfigManager {
         this.main_config[field] = value
         this.save_main()
     }
+    get_receiver_config(type) {
+        return this.receivers_configs[type]
+    }
     get_receiver(type, field) {
         return this.receivers_configs[type][field]
     }
@@ -72,3 +83,4 @@ class ConfigManager {
 module.exports.ConfigManager = ConfigManager
 module.exports.satellites_d_to_l = satellites_d_to_l
 module.exports.ungroup_satellites = ungroup_satellites
+module.exports.get_passes_by_type_satellites = get_passes_by_type_satellites

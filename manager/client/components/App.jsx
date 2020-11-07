@@ -6,7 +6,7 @@ const socket = io()
 
 import { createMuiTheme, ThemeProvider, makeStyles } from '@material-ui/core/styles'
 import { SnackbarProvider, useSnackbar } from 'notistack'
-
+import Satellites_data from './Satellites_data.jsx';
 
 const theme = createMuiTheme({
     palette: {
@@ -138,17 +138,28 @@ class Station_settings extends Component{
     }
 }
 
+function Pass_noti() {
+    const { enqueueSnackbar } = useSnackbar();
+    socket.on("pass_begin", (m) => {
+        enqueueSnackbar("Pass of " + m["name"] + " begun", { variant: "default" });
+    })
+    socket.on("pass_end", (m) => {
+        enqueueSnackbar("Pass of " + m["name"] + " ended", { variant: "default" });
+    })
+    return (
+        <div></div>
+    )
+}
+
 class App extends Component {
     constructor(params) {
         super(params)
-        // socket.on('connect', function(){});
-        // socket.on('event', function(data){});
-        // Input_station_location.send();
-        // this.save_click = this.save_click.bind(this);
+
     }
     render() {
         return (
             <div>
+                <Pass_noti/>
                 <Station_settings/>
                 <Button_update_tle/>
                 <Button_predict_pass/>
