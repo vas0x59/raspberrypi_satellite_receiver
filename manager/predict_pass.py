@@ -120,7 +120,7 @@ def callback(msg):
 
     print(msg)
     ans = correct_for_json(do_predict(tle_dir, satellites, station_location, min_elevation, for_next_hours, prev_predict))
-    # ans = [{'type': 'NOAA', 'name': 'NOAA 19', 'rise_time': str(datetime(2020, 11, 7, 9, 54, 6, 95777)), 'fall_time': str(datetime(2020, 11, 7, 10, 59, 29, 481706)), 'duration': 5.385929}]
+    # ans = [{'type': 'NOAA', 'name': 'NOAA 19', 'rise_time': str(datetime.datetime(2020, 11, 7, 9, 54, 6, 95777)), 'fall_time': str(datetime.datetime(2021, 11, 7, 10, 59, 29, 481706)), 'duration': 10.0}]
     sio.emit("predict_ans", {"ans": ans, "tle_dir": tle_dir, "last_predict_datetime": str(datetime.datetime.utcnow())},
              namespace="/predict_pass")
 

@@ -43,7 +43,7 @@ def creat_prev_folders(path: str):
         os.makedirs(path_folder)
 
 
-def record(freq: float, file_out: str, duration: float, sample_rate: int = 60000, dongle_gain: int = 50, bias_tee: str = "enable_bias_tee" , wav_rate: int = 11025) -> str:
+def record_1(freq: float, file_out: str, duration: float, sample_rate: int = 60000, dongle_gain: int = 50, bias_tee: str = "enable_bias_tee" , wav_rate: int = 11025) -> str:
     """
     freq - in MHz, sample, 
 
@@ -52,24 +52,34 @@ def record(freq: float, file_out: str, duration: float, sample_rate: int = 60000
     """
     wav_out_path = file_out
     raw_out_path = ".".join(file_out.split(".")[:-1] + ["raw"])
+    print("raw", raw_out_path, "file_out", file_out)
     # creat_prev_folders(wav_out_path)
     # Run rtl_fm (record)
-    subprocess.call(args=[
-        "timeout", str(duration), 
-        "rtl_fm", bias_tee,   
-        "-f", str(freq)+"M", 
-        "-s", str(sample_rate), 
+    a = [
+        "timeout", str(duration),
+        "rtl_fm",
+        "-f", str(freq)+"M",
+        "-s", str(sample_rate),
         "-g", str(dongle_gain),
+        # "-E", "wav",
+        # "-E", "deemp",
+        "-A", "fast",
+        "-E", "offset",
         "-F", "9",
         raw_out_path
-    ])
-    
+    ]
+    print("a:   ", " ".join(a))
+    s = subprocess.call(args=a)
+    # s.wait()
     # Run sox (convert)
     subprocess.call(args=[
         "sox",
         "-t", "raw",
         "-r", str(sample_rate),
+        "-es",
         "-b", "16",
+        "-c", "1",
+        "-V1",
         raw_out_path,
         wav_out_path,
         "rate", str(wav_rate)
@@ -77,7 +87,7 @@ def record(freq: float, file_out: str, duration: float, sample_rate: int = 60000
     
     # Setcorrect time stamp and remove raw
     subprocess.call(args=[
-        "touch -r", raw_out_path, wav_out_path
+        "touch", "-r", raw_out_path, wav_out_path
     ])
     subprocess.call(args=[
         "rm", raw_out_path
@@ -97,7 +107,7 @@ def wx_to_img(file_in: str, file_out: str, enhancement: str) -> str:
 
 def process(sat_name: str, pass_duration: float, pass_time_rise: datetime, pass_time_fall: datetime, noaa_config: dict):
     # global passed_passes_times
-    output_path = ""
+    output_path = "/home/vasily/Projects/raspberrypi_satellite_receiver/output"
     freq = noaa_config["satellites"][sat_name]["apt_freq"]
     duration = pass_duration
 
@@ -107,12 +117,13 @@ def process(sat_name: str, pass_duration: float, pass_time_rise: datetime, pass_
     wav_file = sat_output_folder+"/wav/{}_{}_{}.wav".format(sat_name, freq, datetime_str)
     creat_prev_folders(wav_file)
 
-    record(freq, wav_file, duration, dongle_gain=noaa_config["radio"]["dongle_gain"], bias_tee=noaa_config["radio"]["bias_tee"])
+    record_1(freq, wav_file, duration, dongle_gain=noaa_config["radio"]["dongle_gain"])
 
     images_folder = sat_output_folder+"/image"
     creat_prev_folders(images_folder)
 
     enhancements = noaa_config["wx_to_img"]["enhancements"]
+    print(enhancements)
     for e in enhancements:
         image_file = images_folder+"/{}_{}_{}.jpg".format(sat_name, e, datetime_str)
         wx_to_img(wav_file, image_file, e)
@@ -188,17 +199,17 @@ sio.emit("pass_schedule/get", {"":""}, namespace="/receivers/NOAA")
 while True:
     if len(passes) > 0:
         next_pass = passes[0]
-        print(next_pass)
+        # print(next_pass)
         # print(datetime.utcnow() >= next_pass["fall_time"])
         if next_pass["rise_time"] <= datetime.utcnow() <= next_pass["fall_time"]:
             print("Start st2", next_pass)
             while datetime.utcnow() < next_pass["rise_time"]:
                 time.sleep(0.05)
-
+            duration_u = (next_pass["fall_time"] - max(next_pass["rise_time"], datetime.utcnow())).total_seconds()
             sio.emit("pass_begin", {"pass": passes_to_json([next_pass])[0]}, namespace="/receivers/NOAA")
 
-            print(next_pass["name"], next_pass["duration"], next_pass["rise_time"], next_pass["fall_time"], noaa_config)
-            # process(next_pass["name"], next_pass["duration"], next_pass["rise_time"], next_pass["fall_time"], noaa_config)
+            # print(next_pass["name"], next_pass["duration"], duration_u, noaa_config)
+            process(next_pass["name"], min(duration_u, next_pass["duration"]), next_pass["rise_time"], next_pass["fall_time"], noaa_config)
             print("RECORD END wait for end of pass")
             while datetime.utcnow() <= next_pass["fall_time"]:
                 time.sleep(0.05)

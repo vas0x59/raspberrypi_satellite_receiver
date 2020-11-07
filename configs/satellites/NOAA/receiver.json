@@ -5,6 +5,7 @@
     },
     "wx_to_img" : {
         "enhancements" : [
+            "ZA", "MCIR", "MCIR-precip"
         ]
     },
     "satellites" : {
