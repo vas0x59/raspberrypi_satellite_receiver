@@ -2,6 +2,6 @@ builder/exp/*
 */node_modules/*
 tle
 tle/*
-manager/public/build/bundle.js
-manager/public/build/bundle.js.LICENSE.txt
+#manager/public/build/bundle.js
+#manager/public/build/bundle.js.LICENSE.txt
 configs/main_config.json
