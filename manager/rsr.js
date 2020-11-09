@@ -90,7 +90,11 @@ io.of("/receivers/NOAA").on("connection", (socket) => {
     console.log("/receivers/NOAA connected")
     g.modules_connected.NOAA = true
     let send_conf = () => {
-        socket.emit("config", {"config": g.cm.get_receiver_config("NOAA"), "station_location":g.cm.get_main("station_location"), "tle_directory":g.cm.get_main("tle_directory")})
+        socket.emit("config", {
+            "config": g.cm.get_receiver_config("NOAA"), 
+            "station_location":g.cm.get_main("station_location"), 
+            "tle_directory":g.cm.get_main("tle_directory"), 
+            "output_directory":g.cm.get_main("output_directory")})
     }
     socket.on("config/get", (_) => {
         console.log("/receivers/NOAA config/get")

@@ -5,13 +5,14 @@ import json
 import time
 import threading
 from typing import *
-import  socketio
+import socketio
 # import datetime
 from datetime import datetime
 # config
 # main_config = {}
 station_location = {}
 tle_dir_path = ""
+output_directory = ""
 #
 noaa_config = {}
 # class NOAA_Satellite:
@@ -105,14 +106,14 @@ def wx_to_img(file_in: str, file_out: str, enhancement: str) -> str:
     return file_out
 
 
-def process(sat_name: str, pass_duration: float, pass_time_rise: datetime, pass_time_fall: datetime, noaa_config: dict):
-    # global passed_passes_times
-    output_path = "/home/vasily/Projects/raspberrypi_satellite_receiver/output"
+def process(sat_name: str, pass_duration: float, pass_time_rise: datetime, pass_time_fall: datetime, noaa_config: dict, output_directory: str):
+    # global
+    # output_directory = "/home/vasily/Projects/raspberrypi_satellite_receiver/output"
     freq = noaa_config["satellites"][sat_name]["apt_freq"]
     duration = pass_duration
 
     datetime_str = str(pass_time_rise)
-    sat_output_folder = "{}/NOAA/{}/{}".format(output_path, sat_name, datetime_str)
+    sat_output_folder = "{}/NOAA/{}/{}".format(output_directory, sat_name, datetime_str)
     creat_prev_folders(sat_output_folder)
     wav_file = sat_output_folder+"/wav/{}_{}_{}.wav".format(sat_name, freq, datetime_str)
     creat_prev_folders(wav_file)
@@ -175,11 +176,12 @@ def ps_callback(msg):
 
 @sio.on("config", namespace="/receivers/NOAA")
 def c_callback(msg):
-    global noaa_config, station_location, tle_dir_path, ans2
+    global noaa_config, station_location, tle_dir_path, output_directory, ans2
     ans2 = False
     noaa_config = msg["config"]
     station_location = msg["station_location"]
     tle_dir_path = msg["tle_directory"]
+    output_directory = msg["output_directory"]
     print("config", msg)
 
 
@@ -209,7 +211,7 @@ while True:
             sio.emit("pass_begin", {"pass": passes_to_json([next_pass])[0]}, namespace="/receivers/NOAA")
 
             # print(next_pass["name"], next_pass["duration"], duration_u, noaa_config)
-            process(next_pass["name"], min(duration_u, next_pass["duration"]), next_pass["rise_time"], next_pass["fall_time"], noaa_config)
+            process(next_pass["name"], min(duration_u, next_pass["duration"]), next_pass["rise_time"], next_pass["fall_time"], noaa_config, output_directory)
             print("RECORD END wait for end of pass")
             while datetime.utcnow() <= next_pass["fall_time"]:
                 time.sleep(0.05)

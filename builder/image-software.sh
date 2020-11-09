@@ -85,9 +85,7 @@ fi
 echo_stamp "Install wxtoimg"
 dpkg -i "/home/pi/raspberrypi_satellite_receiver/third_party/wxtoimg-armhf-2.11.2-beta.deb"
 
-echo -ne 'YES\n' | wxtoimg --help \
-&& echo "wxtoimg_0" \
-|| echo "wxtoimg_1"
+echo "2.11.2 beta" > /home/pi/.wxtoimglic
 
 # echo "wxtoimg: $(wxtoimg --help)"
 
