@@ -93,7 +93,7 @@ echo -ne 'YES\n' | wxtoimg --help \
 
 echo_stamp "Install python libs"
 my_travis_retry pip3 install pandas pyorbital ephem tweepy Pillow requests socketio
-
+my_travis_retry pip3 install "python-socketio[client]"
 echo_stamp "Install nodejs"
 
 #curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.36.0/install.sh | bash
